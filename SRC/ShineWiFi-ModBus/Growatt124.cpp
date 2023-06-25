@@ -88,6 +88,7 @@ std::tuple<String, String> getTimeSlot(uint16_t start, uint16_t stop) {
   return std::make_tuple(String(start_str), String(stop_str));
 }
 
+#ifdef HAVE_BATTERY
 std::tuple<bool, String> getBatteryFirst(const JsonDocument& req,
                                          JsonDocument& res, Growatt& inverter) {
 #if SIMULATE_INVERTER != 1
@@ -191,6 +192,7 @@ std::tuple<bool, String> setBatteryFirstACChargeEnabled(const JsonDocument& req,
 
   return std::make_tuple(true, "success");
 }
+#endif  // HAVE_BATTERY
 
 std::tuple<bool, String> setTimeSlot(const JsonDocument& req, JsonDocument& res,
                                      Growatt& inverter, uint16_t startReg) {
@@ -251,6 +253,7 @@ std::tuple<bool, String> setTimeSlot(const JsonDocument& req, JsonDocument& res,
   return std::make_tuple(true, "success");
 }
 
+#if HAVE_BATTERY
 std::tuple<bool, String> setBatteryFirstTimeSlot(const JsonDocument& req,
                                                  JsonDocument& res,
                                                  Growatt& inverter) {
@@ -345,6 +348,7 @@ std::tuple<bool, String> setGridFirstTimeSlot(const JsonDocument& req,
                                               Growatt& inverter) {
   return setTimeSlot(req, res, inverter, 1080);
 }
+#endif  // HAVE_BATTERY
 
 #ifndef TEMPERATURE_WORKAROUND_MULTIPLIER
 #define TEMPERATURE_WORKAROUND_MULTIPLIER 0.1
@@ -371,6 +375,7 @@ void init_growatt124(sProtocolDefinition_t& Protocol, Growatt& inverter) {
   Protocol.InputRegisters[P124_PV1_POWER] = sGrowattModbusReg_t{
       5,       0,     SIZE_32BIT, F("PV1InputPower"), 0.1, 0.1,
       POWER_W, false, false};  // #5
+#ifdef HAVE_PV2
   Protocol.InputRegisters[P124_PV2_VOLTAGE] =
       sGrowattModbusReg_t{7,       0,     SIZE_16BIT, F("PV2Voltage"), 0.1, 0.1,
                           VOLTAGE, false, false};  // #6
@@ -380,6 +385,7 @@ void init_growatt124(sProtocolDefinition_t& Protocol, Growatt& inverter) {
   Protocol.InputRegisters[P124_PV2_POWER] = sGrowattModbusReg_t{
       9,       0,     SIZE_32BIT, F("PV2InputPower"), 0.1, 0.1,
       POWER_W, false, false};  // #8
+#endif
 
   Protocol.InputRegisters[P124_PAC] = sGrowattModbusReg_t{
       35,      0,    SIZE_32BIT_S, F("OutputPower"), 0.1, 0.1,
@@ -397,6 +403,7 @@ void init_growatt124(sProtocolDefinition_t& Protocol, Growatt& inverter) {
   Protocol.InputRegisters[P124_PAC1] = sGrowattModbusReg_t{
       40, 0,     SIZE_32BIT, F("L1ThreePhaseGridOutputPower"), 0.1, 0.1,
       VA, false, false};  // #13
+#ifdef HAVE_3_PHASES
   Protocol.InputRegisters[P124_VAC2] = sGrowattModbusReg_t{
       42,      0,     SIZE_16BIT, F("L2ThreePhaseGridVoltage"), 0.1, 0.1,
       VOLTAGE, false, false};  // #14
@@ -415,6 +422,7 @@ void init_growatt124(sProtocolDefinition_t& Protocol, Growatt& inverter) {
   Protocol.InputRegisters[P124_PAC3] = sGrowattModbusReg_t{
       48, 0,     SIZE_32BIT, F("L3ThreePhaseGridOutputPower"), 0.1, 0.1,
       VA, false, false};  // #19
+#endif
   // FRAGMENT 1: END
 
   // FRAGMENT 2: BEGIN
@@ -434,12 +442,14 @@ void init_growatt124(sProtocolDefinition_t& Protocol, Growatt& inverter) {
   Protocol.InputRegisters[P124_EPV1_TOTAL] = sGrowattModbusReg_t{
       61,        0,     SIZE_32BIT, F("PV1EnergyTotal"), 0.1, 0.1,
       POWER_KWH, false, false};  // #24
+#ifdef HAVE_PV2
   Protocol.InputRegisters[P124_EPV2_TODAY] = sGrowattModbusReg_t{
       63,        0,     SIZE_32BIT, F("PV2EnergyToday"), 0.1, 0.1,
       POWER_KWH, false, false};  // #25
   Protocol.InputRegisters[P124_EPV2_TOTAL] = sGrowattModbusReg_t{
       65,        0,     SIZE_32BIT, F("PV2EnergyTotal"), 0.1, 0.1,
       POWER_KWH, false, false};  // #26
+#endif
   Protocol.InputRegisters[P124_EPV_TOTAL] = sGrowattModbusReg_t{
       91,        0,     SIZE_32BIT, F("PVEnergyTotal"), 0.1, 0.1,
       POWER_KWH, false, false};  // #27
@@ -455,6 +465,7 @@ void init_growatt124(sProtocolDefinition_t& Protocol, Growatt& inverter) {
       TEMPERATURE, false, false};  // #30
   // FRAGMENT 2: END
 
+#ifdef HAVE_BATTERY
   // FRAGMENT 3: BEGIN
   Protocol.InputRegisters[P124_PDISCHARGE] = sGrowattModbusReg_t{
       1009,    0,    SIZE_32BIT, F("DischargePower"), 0.1, 0.1,
@@ -529,6 +540,7 @@ void init_growatt124(sProtocolDefinition_t& Protocol, Growatt& inverter) {
       1062,      0,    SIZE_32BIT, F("LocalLoadEnergyTotal"), 0.1, 0.1,
       POWER_KWH, true, false};  // #52
   // FRAGMENT 3: END
+#endif  // HAVE_BATTERY
 
   // FRAGMENT 4: START
   Protocol.InputRegisters[P124_ACCHARGE_TODAY] = sGrowattModbusReg_t{
@@ -553,6 +565,7 @@ void init_growatt124(sProtocolDefinition_t& Protocol, Growatt& inverter) {
   inverter.RegisterCommand("datetime/get", getDateTime);
   inverter.RegisterCommand("datetime/set", updateDateTime);
 
+#ifdef HAVE_BATTERY
   inverter.RegisterCommand("batteryfirst/get", getBatteryFirst);
   inverter.RegisterCommand("batteryfirst/set/powerrate",
                            setBatteryFirstPowerRate);
@@ -566,4 +579,5 @@ void init_growatt124(sProtocolDefinition_t& Protocol, Growatt& inverter) {
   inverter.RegisterCommand("gridfirst/set/powerrate", setGridFirstPowerRate);
   inverter.RegisterCommand("gridfirst/set/stopsoc", setGridFirstStopSOC);
   inverter.RegisterCommand("gridfirst/set/timeslot", setGridFirstTimeSlot);
+#endif  // HAVE_BATTERY
 }
