@@ -450,7 +450,7 @@ void handlePostData()
     uint16_t u16Tmp;
     uint32_t u32Tmp;
 
-    if (!httpServer.hasArg(F("reg")) || !httpServer.hasArg(F("val")))
+    if (!httpServer.hasArg(F("reg")) || (httpServer.arg(F("operation")) == "W" && !httpServer.hasArg(F("val"))))
     {
         // If the POST request doesn't have data
         httpServer.send(400, F("text/plain"), F("400: Invalid Request")); // The request is invalid, so send HTTP status 400
