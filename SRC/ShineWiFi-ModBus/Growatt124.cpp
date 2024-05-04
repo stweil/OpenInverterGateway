@@ -540,7 +540,6 @@ void init_growatt124(sProtocolDefinition_t& Protocol, Growatt& inverter) {
       1062,      0,    SIZE_32BIT, F("LocalLoadEnergyTotal"), 0.1, 0.1,
       POWER_KWH, true, false};  // #52
   // FRAGMENT 3: END
-#endif  // HAVE_BATTERY
 
   // FRAGMENT 4: START
   Protocol.InputRegisters[P124_ACCHARGE_TODAY] = sGrowattModbusReg_t{
@@ -550,6 +549,7 @@ void init_growatt124(sProtocolDefinition_t& Protocol, Growatt& inverter) {
       1126,      0,    SIZE_32BIT, F("ACChargeEnergyTotal"), 0.1, 0.1,
       POWER_KWH, true, false};  // #54
   // FRAGMENT 4: END
+#endif  // HAVE_BATTERY
 
   Protocol.InputFragmentCount = 4;
   Protocol.InputReadFragments[0] = sGrowattReadFragment_t{0, 50};
