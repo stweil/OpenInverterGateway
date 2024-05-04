@@ -74,10 +74,10 @@ void init_growattBP(sProtocolDefinition_t& Protocol, Growatt& inverter) {
 
   // statistics
   Protocol.InputRegisters[BP_EAC_TODAY] = sGrowattModbusReg_t{
-      53,        0,    SIZE_32BIT, F("TodayGenerateEnergy"), 0.1, 0.1,
+      53,        0,    SIZE_32BIT, F("TodayGeneratedEnergy"), 0.1, 0.1,
       POWER_KWH, true, false};  // #20
   Protocol.InputRegisters[BP_EAC_TOTAL] = sGrowattModbusReg_t{
-      55,        0,    SIZE_32BIT, F("TotalGenerateEnergy"), 0.1, 0.1,
+      55,        0,    SIZE_32BIT, F("TotalGeneratedEnergy"), 0.1, 0.1,
       POWER_KWH, true, false};  // #21
   Protocol.InputRegisters[BP_TIME_TOTAL] = sGrowattModbusReg_t{
       57,      0,     SIZE_32BIT, F("TWorkTimeTotal"), 0.5, 1,

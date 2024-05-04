@@ -48,9 +48,9 @@ mqtt:
   sensor:
     - state_topic: "energy/solar"
       unique_id: "growatt_wr_total_production"
-      name: "Growatt.TotalGenerateEnergy"
+      name: "Growatt.TotalGeneratedEnergy"
       unit_of_measurement: "kWh"
-      value_template: "{{ float(value_json.TotalGenerateEnergy) | round(1) }}"
+      value_template: "{{ float(value_json.TotalGeneratedEnergy) | round(1) }}"
       device_class: energy
       state_class: total_increasing
       json_attributes_topic: "energy/solar"
@@ -221,5 +221,3 @@ Subscribe to mqtt events from the stick:
 Get battery first state:
 
     mosquitto_pub -h <ip> -u <mqttuser> -P <mqttpw> -m "{\"correlationId\": \"ha-batteryfirst-get\"}" -t energytest/solar/command/batteryfirst/get
-
- 
